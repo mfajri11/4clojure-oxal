@@ -198,8 +198,273 @@ keep #(if (odd? %) %)
 (fn f [xs]
   (cond
     (empty? xs) true
-    (= 1 (count xs)) true
     (= (first xs) (last xs)) (f ((comp rest drop-last) xs))
     :else false
     ))
+```
+
+[Problem 28, Flatten a Sequence](https://4clojure.oxal.org/#/problem/28)
+```clj
+;; 1
+(fn f [xs]
+  (cond
+    (empty? xs) nil
+    (coll? (first xs)) (concat (f (first xs)) (f (rest xs)))
+    :else (cons (first xs) (f (rest xs)))))
+```
+[Problem 29, Get the Caps](https://4clojure.oxal.org/#/problem/29)
+```clj
+;; 1
+(fn [xs]
+  (apply str (re-seq #"[A-Z]" xs)))
+```
+[Problem 30, Compress a Sequence](https://4clojure.oxal.org/#/problem/30)
+```clj
+(fn [s]
+  (map first (partition-by identity s)))
+```
+[Problem 31, Pack a Sequence](https://4clojure.oxal.org/#/problem/31)
+```clj
+;; 1
+#(partition-by identity %)
+;; same with
+(fn [xs] (partition-by identity xs))
+```
+[Problem 32, Duplicate a Sequence](https://4clojure.oxal.org/#/problem/32)
+```clj
+;; 1
+#(interleave % %)
+;; same with 
+(fn [xs] (interleave xs xs))
+;; 2
+(fn [xs] (mapcat list xs xs))
+```
+[Problem 33, Replicate a Sequence](https://4clojure.oxal.org/#/problem/33)
+```clj
+;; 1
+(fn [xs n]
+  (apply interleave (repeat n xs)))
+;; 2 (from internet)
+(fn [xs n]
+  (mapcat #(repeat n % ) xs))
+```
+[Problem 34, Implement range](https://4clojure.oxal.org/#/problem/34)
+```clj
+;; 1
+(fn [s f]
+  (take (- f s) (iterate inc s)))
+```
+[Problem 35, Local bindings](https://4clojure.oxal.org/#/problem/35)
+```clj
+7
+```
+[Problem 36, Let it Be](https://4clojure.oxal.org/#/problem/36)
+```clj
+[x 7 y 3 z 1]
+```
+[Problem 37, Regular Expressions](https://4clojure.oxal.org/#/problem/37)
+```clj
+"ABC"
+```
+[Problem 38, Maximum value](https://4clojure.oxal.org/#/problem/38)
+```clj
+;; 1
+(fn f
+  ([x] x)
+  ([x y] (if (> x y) x y))
+  ([x y & more] (apply f (f x y) more)))
+;; 2
+(fn f [& xs]
+  (reduce (fn [x y] (if (> x y) x y)) xs))
+;; 3
+(fn [& xs]
+  (loop [
+    res (first xs)
+    args (rest xs)]
+    (if (empty? args) res
+    (recur (if (> res (first args))res (first args)) (rest args)))))
+;; 4 (from internet)
+(fn [& args]
+  (-> 
+  args
+  sort
+  last))
+```
+
+[Problem 39, Interleave Two Seqs](https://4clojure.oxal.org/#/problem/39)
+```clj
+;; 1
+(fn [xs ys]
+  (mapcat list xs ys))
+```
+
+[Problem 40, Interpose a Seq](https://4clojure.oxal.org/#/problem/40)
+```clj
+;; 1
+(fn [n xs]
+  (drop-last (interleave xs (repeat n))))
+```
+[Problem 41, Drop Every Nth Item](https://4clojure.oxal.org/#/problem/41)
+```clj
+;; 1
+(fn [xs n]
+  (loop [
+    i 1
+    ans []
+    coll xs]
+      (if (empty? coll) ans
+      (recur (inc i) (if-not (= 0 (mod i n)) (conj ans (first coll)) ans) (rest coll)))))
+```
+[Problem 42, Factorial Fun](https://4clojure.oxal.org/#/problem/42)
+```clj
+;; 1
+#(reduce * 1 (range 1, (inc %)))
+;; 2
+(fn f [n]
+  (if (zero? n) 1
+  (* n (f (dec n)))))
+;; 3
+(fn [n]
+  (loop [
+    ans 1
+    x n
+  ]
+  (if (zero? x) ans
+    (recur (* ans x) (dec x)))))
+```
+[Problem 45, Intro to Iterate](https://4clojure.oxal.org/#/problem/45)
+```clj
+;; 1
+'(1, 4, 7, 10, 13)
+;; 2
+(range 1, 14, 3)
+```
+[Problem 46, Flipping out](https://4clojure.oxal.org/#/problem/46)
+```clj
+;; 1
+(fn [f]
+  (fn [a b]
+    (f b a)))
+;; 2 using anonymous function to make ti short
+(fn [f]
+  #(f %1 %2))
+;; 3 from internet
+(fn [f]
+  (fn [& args] (apply f (reverse args))))
+;; 4 from internet
+(fn [f]
+  (fn [& args]
+    (->> args
+      (reverse)
+      (apply f)))) 
+```
+[Problem 47, Contain Yourself](https://4clojure.oxal.org/#/problem/47)
+```clj
+;; 1
+4
+```
+[Problem 48, Intro to some](https://4clojure.oxal.org/#/problem/48)
+```clj
+;; 1
+6
+```
+[Problem 49, Split a sequence](https://4clojure.oxal.org/#/problem/49)
+```clj
+;; 1 i don't know why it's wrong
+(fn [n xs]
+  (juxt 
+    (partial take n)
+    (partial drop n)) xs)
+;; 2 still wrong
+(fn [n xs]
+  (juxt 
+    (comp vec (partial take n))
+    (comp vec (partial drop n))) xs)
+;; 2 the right one
+(juxt take drop)
+;; now i know the right one
+  (juxt 
+    (comp vec take)
+    (comp vec drop))
+```
+(Problem 51, Advanced Destructuring)[https://4clojure.oxal.org/#/problem/51]
+```clj
+[1 2 3 4 5]
+```
+(Problem 52, Intro to Destructuring)[https://4clojure.oxal.org/#/problem/52]
+```clj
+[c e]
+```
+(Problem 56, Find Distinct Items)[https://4clojure.oxal.org/#/problem/56]
+```clj
+(fn [xs]
+  (loop [
+    y (first xs)
+    ys [y]
+    zs (rest xs)]
+    (letfn [(in? [v coll] (some #(= v %) coll))]
+      (if (empty? zs) (if (in? y ys) ys (conj ys y))
+        (if-not (nil? (in? y ys))
+        (recur (first zs) ys (rest zs))
+        (recur (first zs) (conj ys y) (rest zs)))))))
+;; 2
+
+```
+
+(Problem 57, Simple Recursion)[https://4clojure.oxal.org/#/problem/57]
+```clj
+[5 4 3 2 1]
+```
+(Problem 58, Function Composition)[https://4clojure.oxal.org/#/problem/58]
+```clj
+;; 1 still not passed all the test
+(fn [& fs]
+  (fn [& args]
+    (reduce #(apply %2 %1) args (reverse fs))))
+
+;; 2
+(fn [& fs]
+  (fn [& args]
+    (let [
+      val (apply (last fs) args)]
+      (letfn [
+        (f [acc fs] (if (empty? fs) acc (f ((last fs) acc) (drop-last fs))))] (f val (drop-last fs))))))
+```
+
+(Problem 60, Sequence Reductions)[https://4clojure.oxal.org/#/problem/60]
+```clj
+(fn [f xs]
+  (let [v (f (first xs))]
+    (letfn [
+      (g [acc zs]
+      (let [val (f acc (first zs))]
+        (lazy-seq (cons acc (g val (rest zs))))))]
+        (g v (rest xs)))))
+
+```
+
+(Problem 61, Map Construction
+)[https://4clojure.oxal.org/#/problem/61]
+```clj
+;; 1
+(fn [xs ys]
+  (apply hash-map (interleave xs ys)))
+;; 2 (from other solution the idea is the same with mine)
+(fn [xs ys]
+  (into {} (map vector xs ys)))
+;; 3 from internet
+(fn [xs ys]
+  (apply merge (map hash-map xs ys)))  
+```
+(Problem 62, Re-implement Iteration
+)[https://4clojure.oxal.org/#/problem/62]
+```clj
+;; 1
+(fn iterate' [f init-val]
+  (lazy-seq (cons init-val (iterate' f (f init-val)))))
+```
+[]()
+```clj
+(fn [pred coll]
+  (reduce #(assoc %1 (pred %2) %2) {} coll))
 ```
